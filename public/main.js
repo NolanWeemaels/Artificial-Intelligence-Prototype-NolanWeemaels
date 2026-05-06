@@ -1,3 +1,12 @@
-console.log("Frontend connected");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const result = document.getElementById("result");
 
-// Controleert of main.js correct geladen wordt
+analyzeBtn.addEventListener("click", () => {
+
+  result.innerHTML = `
+    <p><strong>Hierarchy:</strong> Waiting for AI...</p>
+    <p><strong>Composition:</strong> Waiting for AI...</p>
+  `;
+
+});
+
