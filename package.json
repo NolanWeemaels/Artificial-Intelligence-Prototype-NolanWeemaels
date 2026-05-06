@@ -1,0 +1,24 @@
+{
+  "name": "artificial-intelligence-prototype-nolanweemaels",
+  "version": "1.0.0",
+  "description": "Final work for AI course.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NolanWeemaels/Artificial-Intelligence-Prototype-NolanWeemaels.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NolanWeemaels/Artificial-Intelligence-Prototype-NolanWeemaels/issues"
+  },
+  "homepage": "https://github.com/NolanWeemaels/Artificial-Intelligence-Prototype-NolanWeemaels#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "openai": "^6.36.0"
+  }
+}
