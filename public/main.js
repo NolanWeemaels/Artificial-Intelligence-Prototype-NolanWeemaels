@@ -1,12 +1,26 @@
 const analyzeBtn = document.getElementById("analyzeBtn");
 const result = document.getElementById("result");
 
-analyzeBtn.addEventListener("click", () => {
+analyzeBtn.addEventListener("click", async () => {
 
-  result.innerHTML = `
-    <p><strong>Hierarchy:</strong> Waiting for AI...</p>
-    <p><strong>Composition:</strong> Waiting for AI...</p>
-  `;
+  const response = await fetch("/analyze", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      test: "hello"
+    })
+  });
+
+  // Stuurt een request naar de server
+
+  const data = await response.json();
+
+  // Zet de response om naar JSON
+
+  result.innerHTML = data.feedback;
+
+  // Toont feedback op de pagina
 
 });
-

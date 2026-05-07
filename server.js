@@ -1,19 +1,32 @@
 const express = require("express");
-
 const path = require("path");
 
 const app = express();
 
 const PORT = 3000;
 
-// Zorgt ervoor dat de public map zichtbaar wordt in de browser
+app.use(express.json());
+
+// Zorgt ervoor dat we JSON data kunnen ontvangen
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// Start de server
+// Zorgt ervoor dat de public map zichtbaar wordt in de browser
 
-app.listen(PORT, () => {
+app.post("/analyze", (req, res) => {
 
-  console.log(`Server running on http://localhost:${PORT}`);
+  res.json({
+    feedback: `
+      <p><strong>Hierarchy:</strong> The title is visible enough.</p>
+      <p><strong>Composition:</strong> The layout feels balanced.</p>
+    `
+  });
 
 });
+
+// Stuurt tijdelijke test feedback terug
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
