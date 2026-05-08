@@ -3,15 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>SecondEye</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <main class="container">
-
     <h1>SecondEye</h1>
 
     <p class="subtitle">
@@ -19,45 +16,21 @@
     </p>
 
     <div class="card">
+      <label for="imageInput">Upload PNG</label>
+      <input type="file" id="imageInput" accept="image/png">
 
-      <label for="imageInput">
-        Upload PNG
-      </label>
+      <label for="contextInput">Design Context</label>
+      <textarea id="contextInput" placeholder="Example: Poster for a school event"></textarea>
 
-      <input 
-        type="file" 
-        id="imageInput"
-        accept="image/png"
-      >
-
-      <label for="contextInput">
-        Design Context
-      </label>
-
-      <textarea 
-        id="contextInput"
-        placeholder="Example: Poster for a school event"
-      ></textarea>
-
-      <button id="analyzeBtn">
-        Analyze Design
-      </button>
-
+      <button id="analyzeBtn">Analyze Design</button>
     </div>
 
     <div class="result-card">
-
       <h2>Feedback</h2>
-
-      <div id="result">
-        No feedback yet.
-      </div>
-
+      <div id="result">No feedback yet.</div>
     </div>
-
   </main>
 
   <script src="main.js"></script>
-
 </body>
 </html>

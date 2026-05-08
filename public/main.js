@@ -1,33 +1,49 @@
+const analyzeBtn = document.getElementById("analyzeBtn");
 const imageInput = document.getElementById("imageInput");
-
 const contextInput = document.getElementById("contextInput");
+const result = document.getElementById("result");
 
-const file = imageInput.files[0];
+analyzeBtn.addEventListener("click", async () => {
 
-const context = contextInput.value;
+  const file = imageInput.files[0];
+  const context = contextInput.value;
 
-// Haalt afbeelding en context op zoals in de les (input verzamelen)
+  // Haalt afbeelding en context op
 
-const formData = new FormData();
+  if (!file) {
 
-formData.append("image", file);
+    result.innerHTML = "<p>Please upload a PNG file.</p>";
 
-formData.append("context", context);
+    return;
 
-// Maakt een request body zoals bij API calls in de les
+  }
 
-const response = await fetch("/analyze", {
+  // Controleert of een afbeelding geselecteerd is
 
-  method: "POST",
+  const formData = new FormData();
 
-  body: formData
+  formData.append("image", file);
+  formData.append("context", context);
+
+  // Zet de data klaar voor de server
+
+  result.innerHTML = "<p>Analyzing design...</p>";
+
+  // Tijdelijke laadmelding
+
+  const response = await fetch("/analyze", {
+    method: "POST",
+    body: formData
+  });
+
+  // Stuurt data naar de server
+
+  const data = await response.json();
+
+  // Zet response om naar JSON
+
+  result.innerHTML = data.feedback;
+
+  // Toont feedback op de pagina
 
 });
-
-// Stuurt data naar server
-
-const data = await response.json();
-
-result.innerHTML = data.feedback;
-
-// Toont feedback op de pagina
