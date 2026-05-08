@@ -19,6 +19,7 @@
   "homepage": "https://github.com/NolanWeemaels/Artificial-Intelligence-Prototype-NolanWeemaels#readme",
   "dependencies": {
     "express": "^5.2.1",
+    "multer": "^2.1.1",
     "openai": "^6.36.0"
   }
 }
