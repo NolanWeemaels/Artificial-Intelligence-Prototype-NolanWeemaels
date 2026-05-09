@@ -55,23 +55,41 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
             {
               type: "text",
               text: `
-              Analyze this design.
+                Analyze this design.
 
-              Context:
-              ${context}
+                Context:
+                ${context}
 
-              Detect:
-              - title
-              - subtitle
-              - text
-              - image
+                Detect:
+                - Title
+                - Subtitle
+                - Main image
+                - Body text
 
-              Give short and clear feedback about:
-              - hierarchy
-              - composition
+                Then give feedback in this exact HTML structure:
 
-              Keep the answer simple.
-              `
+                <h3>Detected Elements</h3>
+                <ul>
+                <li><strong>Title:</strong> ...</li>
+                <li><strong>Subtitle:</strong> ...</li>
+                <li><strong>Main Image:</strong> ...</li>
+                <li><strong>Body Text:</strong> ...</li>
+                </ul>
+
+                <h3>Hierarchy Feedback</h3>
+                <p>...</p>
+
+                <h3>Composition Feedback</h3>
+                <p>...</p>
+
+                <h3>Suggestions</h3>
+                <ul>
+                <li>...</li>
+                <li>...</li>
+                </ul>
+
+                Keep the feedback short and simple.
+                `
             },
             {
               type: "image_url",
