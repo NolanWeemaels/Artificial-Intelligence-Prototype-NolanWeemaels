@@ -70,3 +70,10 @@ button:hover {
   margin-top: 1rem;
   line-height: 1.6;
 }
+
+#imagePreview {
+  width: 100%;
+  margin-top: 1rem;
+  border-radius: 8px;
+  display: none;
+}
