@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const multer = require("multer");
 const OpenAI = require("openai");
+const fs = require("fs");
 
 const app = express();
 
@@ -33,44 +34,67 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 
     const context = req.body.context;
 
-    // Haalt de context op van de gebruiker
+    // Haalt context op van de gebruiker
 
-    const prompt = `
-    You are a design feedback assistant.
+    const imagePath = req.file.path;
 
-    The user uploaded a design with this context:
-    "${context}"
+    // Haalt het pad van de afbeelding op
 
-    Give short feedback about:
-    - hierarchy
-    - composition
+    const base64Image = fs.readFileSync(imagePath, {
+      encoding: "base64"
+    });
 
-    Keep the feedback simple and clear.
-    `;
-
-    // Bouwt een simpele prompt op
+    // Zet de afbeelding om naar base64
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
           role: "user",
-          content: prompt
+          content: [
+            {
+              type: "text",
+              text: `
+              Analyze this design.
+
+              Context:
+              ${context}
+
+              Detect:
+              - title
+              - subtitle
+              - text
+              - image
+
+              Give short and clear feedback about:
+              - hierarchy
+              - composition
+
+              Keep the answer simple.
+              `
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/png;base64,${base64Image}`
+              }
+            }
+          ]
         }
       ]
     });
 
-    // Stuurt de prompt naar OpenAI
+    // Stuurt afbeelding + context naar OpenAI
 
     const feedback = response.choices[0].message.content;
 
-    // Haalt het antwoord op
+    // Haalt AI feedback op
 
     res.json({
       feedback: `<p>${feedback}</p>`
     });
 
-    // Stuurt feedback terug naar de frontend
+    // Stuurt feedback terug naar frontend
 
   } catch (error) {
 
@@ -79,7 +103,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     // Toont fouten in de terminal
 
     res.status(500).json({
-      feedback: "<p>Something went wrong.</p>"
+      feedback: "<p>Something went wrong while analyzing the design.</p>"
     });
 
   }

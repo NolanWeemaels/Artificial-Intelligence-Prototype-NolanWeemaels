@@ -36,7 +36,7 @@ analyzeBtn.addEventListener("click", async () => {
     body: formData
   });
 
-  // Stuurt data naar de server
+  // Stuurt afbeelding + context naar server
 
   const data = await response.json();
 
