@@ -92,6 +92,9 @@ analyzeBtn.addEventListener("click", async () => {
       const box = document.createElement("div");
 
       box.classList.add("overlay-box");
+      box.classList.add("overlay-" + component.type);
+
+      // Geeft elke overlay box een kleur op basis van het component type
 
       box.textContent = component.label;
 
