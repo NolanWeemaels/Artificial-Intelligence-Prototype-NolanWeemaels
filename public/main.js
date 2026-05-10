@@ -3,6 +3,7 @@ const imageInput = document.getElementById("imageInput");
 const contextInput = document.getElementById("contextInput");
 const result = document.getElementById("result");
 const imagePreview = document.getElementById("imagePreview");
+const componentList = document.getElementById("componentList");
 
 imageInput.addEventListener("change", () => {
 
@@ -21,6 +22,10 @@ imageInput.addEventListener("change", () => {
   imagePreview.style.display = "block";
 
   // Toont de preview afbeelding
+
+  componentList.innerHTML = "";
+
+  // Maakt oude badges leeg
 
 });
 
@@ -49,8 +54,9 @@ analyzeBtn.addEventListener("click", async () => {
   // Zet data klaar voor de server
 
   result.innerHTML = "<p>Analyzing design...</p>";
+  componentList.innerHTML = "";
 
-  // Tijdelijke laadmelding
+  // Toont laadmelding en maakt oude badges leeg
 
   const response = await fetch("/analyze", {
     method: "POST",
@@ -62,6 +68,29 @@ analyzeBtn.addEventListener("click", async () => {
   const data = await response.json();
 
   // Zet response om naar JSON
+
+  console.log(data);
+
+  // Toont serverantwoord in console
+
+  if (data.components) {
+
+    data.components.forEach((component) => {
+
+      const badge = document.createElement("span");
+
+      badge.classList.add("component-badge");
+      badge.classList.add("badge-" + component.type);
+
+      badge.textContent = component.label;
+
+      componentList.appendChild(badge);
+
+    });
+
+  }
+
+  // Toont badges voor de gevonden UI componenten
 
   result.innerHTML = data.feedback;
 

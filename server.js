@@ -7,12 +7,11 @@ const OpenAI = require("openai");
 const fs = require("fs");
 
 const app = express();
-
 const PORT = 3000;
 
 const upload = multer({ dest: "uploads/" });
 
-// Zorgt ervoor dat we bestanden kunnen ontvangen
+// Zorgt ervoor dat afbeeldingen ontvangen worden
 
 const knowledgeFiles = [
   "visual-hierarchy.txt",
@@ -22,53 +21,41 @@ const knowledgeFiles = [
   "spacing.txt"
 ];
 
-// Lijst met knowledge files voor RAG
+// Bevat de RAG knowledge files
 
 function getDesignGuidelines() {
-
   let guidelines = "";
 
   knowledgeFiles.forEach((fileName) => {
-
     const filePath = path.join(__dirname, "knowledge", fileName);
-
     const fileContent = fs.readFileSync(filePath, "utf8");
 
     guidelines += fileContent + "\n\n";
-
   });
 
   return guidelines;
-
 }
 
-// Leest alle knowledge files en voegt ze samen
+// Leest de RAG bestanden uit
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Leest de API key uit het .env bestand
+// Maakt de OpenAI client aan
 
 app.use(express.json());
-
-// Laat de server JSON lezen
-
 app.use(express.static(path.join(__dirname, "public")));
 
-// Zorgt ervoor dat de public map zichtbaar wordt
-
 app.post("/analyze", upload.single("image"), async (req, res) => {
-
   try {
-
     const context = req.body.context;
 
-    // Haalt context op van de gebruiker
+    // Haalt de context op
 
     const designGuidelines = getDesignGuidelines();
 
-    // Haalt de RAG designregels op
+    // Haalt de RAG regels op
 
     const imagePath = req.file.path;
 
@@ -82,6 +69,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "user",
@@ -89,54 +77,33 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
             {
               type: "text",
               text: `
-                Analyze this UI design. Do not wrap the response in markdown or code blocks.
-                Also mention footer elements if visible.
-                Be more critical and give specific feedback.
+Analyze this UI design.
 
-                Context:
-                ${context}
+Return ONLY valid JSON.
+Do not use markdown.
+Do not use code blocks.
 
-                Design guidelines from RAG:
-                ${designGuidelines}
+Context:
+${context}
 
-                First detect the visible UI elements.
+Design guidelines from RAG:
+${designGuidelines}
 
-                Identify:
-                - title
-                - subtitle
-                - buttons
-                - navigation
-                - images
-                - text blocks
-                - cards
+Detect visible UI elements:
+title, subtitle, buttons, navigation, images, text blocks, cards and footer.
 
-                Then return the response in this exact HTML structure:
+Return this exact JSON structure:
 
-                <h3>Detected Elements</h3>
-                <ul>
-                <li><strong>Title:</strong> ...</li>
-                <li><strong>Subtitle:</strong> ...</li>
-                <li><strong>Buttons:</strong> ...</li>
-                <li><strong>Navigation:</strong> ...</li>
-                <li><strong>Images:</strong> ...</li>
-                <li><strong>Text Blocks:</strong> ...</li>
-                <li><strong>Cards:</strong> ...</li>
-                </ul>
-
-                <h3>Hierarchy Feedback</h3>
-                <p>...</p>
-
-                <h3>Composition Feedback</h3>
-                <p>...</p>
-
-                <h3>Suggestions</h3>
-                <ul>
-                <li>...</li>
-                <li>...</li>
-                </ul>
-
-                Keep the feedback short and clear.
-                `
+{
+  "components": [
+    {
+      "type": "title",
+      "label": "Main title"
+    }
+  ],
+  "feedback": "<h3>Detected Elements</h3><ul><li>...</li></ul><h3>Hierarchy Feedback</h3><p>...</p><h3>Composition Feedback</h3><p>...</p><h3>Suggestions</h3><ul><li>...</li></ul>"
+}
+`
             },
             {
               type: "image_url",
@@ -149,32 +116,26 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
       ]
     });
 
-    // Stuurt afbeelding + context + RAG regels naar OpenAI
+    // Stuurt afbeelding, context en RAG naar OpenAI
 
-    const feedback = response.choices[0].message.content;
+    const aiResult = JSON.parse(response.choices[0].message.content);
 
-    // Haalt AI feedback op
+    // Zet het AI antwoord om naar JSON
 
-    res.json({
-      feedback: feedback
-    });
+    res.json(aiResult);
 
-    // Stuurt feedback terug naar frontend
+    // Stuurt components en feedback naar frontend
 
   } catch (error) {
-
     console.log(error);
 
-    // Toont fouten in de terminal
-
     res.status(500).json({
+      components: [],
       feedback: "<p>Something went wrong while analyzing the design.</p>"
     });
 
-    // Stuurt foutmelding terug naar frontend
-
+    // Stuurt een foutmelding terug
   }
-
 });
 
 app.listen(PORT, () => {
