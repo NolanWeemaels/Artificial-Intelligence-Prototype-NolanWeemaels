@@ -77,6 +77,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
             {
               type: "text",
               text: `
+
 Analyze this UI design.
 
 Return ONLY valid JSON.
@@ -92,13 +93,31 @@ ${designGuidelines}
 Detect visible UI elements:
 title, subtitle, buttons, navigation, images, text blocks, cards and footer.
 
+Every component must include:
+- type
+- label
+- x
+- y
+- width
+- height
+
+Use percentages from 0 to 100.
+x = distance from the left.
+y = distance from the top.
+width = width of the detected area.
+height = height of the detected area.
+
 Return this exact JSON structure:
 
 {
   "components": [
     {
       "type": "title",
-      "label": "Main title"
+      "label": "Main title",
+      "x": 30,
+      "y": 20,
+      "width": 40,
+      "height": 10
     }
   ],
   "feedback": "<h3>Detected Elements</h3><ul><li>...</li></ul><h3>Hierarchy Feedback</h3><p>...</p><h3>Composition Feedback</h3><p>...</p><h3>Suggestions</h3><ul><li>...</li></ul>"

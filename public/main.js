@@ -4,6 +4,7 @@ const contextInput = document.getElementById("contextInput");
 const result = document.getElementById("result");
 const imagePreview = document.getElementById("imagePreview");
 const componentList = document.getElementById("componentList");
+const overlay = document.getElementById("overlay");
 
 imageInput.addEventListener("change", () => {
 
@@ -24,8 +25,9 @@ imageInput.addEventListener("change", () => {
   // Toont de preview afbeelding
 
   componentList.innerHTML = "";
+  overlay.innerHTML = "";
 
-  // Maakt oude badges leeg
+  // Maakt oude detecties leeg
 
 });
 
@@ -55,8 +57,9 @@ analyzeBtn.addEventListener("click", async () => {
 
   result.innerHTML = "<p>Analyzing design...</p>";
   componentList.innerHTML = "";
+  overlay.innerHTML = "";
 
-  // Toont laadmelding en maakt oude badges leeg
+  // Toont laadmelding en maakt oude detecties leeg
 
   const response = await fetch("/analyze", {
     method: "POST",
@@ -86,11 +89,24 @@ analyzeBtn.addEventListener("click", async () => {
 
       componentList.appendChild(badge);
 
+      const box = document.createElement("div");
+
+      box.classList.add("overlay-box");
+
+      box.textContent = component.label;
+
+      box.style.left = (component.x || 5) + "%";
+      box.style.top = (component.y || 5) + "%";
+      box.style.width = (component.width || 30) + "%";
+      box.style.height = (component.height || 10) + "%";
+
+      overlay.appendChild(box);
+
     });
 
   }
 
-  // Toont badges voor de gevonden UI componenten
+  // Tekent overlay boxes op de afbeelding
 
   result.innerHTML = data.feedback;
 
