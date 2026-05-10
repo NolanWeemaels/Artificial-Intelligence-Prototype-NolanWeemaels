@@ -1,0 +1,6 @@
+Composition is about how elements are placed on the screen.
+Important elements should be visually balanced.
+The layout should not feel too crowded or too empty.
+The main image should support the message of the design.
+Elements that belong together should be placed close to each other.
+A clear structure makes the design easier to understand.

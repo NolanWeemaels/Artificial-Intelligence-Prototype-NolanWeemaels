@@ -1,0 +1,6 @@
+Color and contrast affect readability and accessibility.
+Text should have enough contrast with the background.
+Bright colors can create energy, but too many bright colors can feel overwhelming.
+Important elements can use stronger contrast to stand out.
+Colors should support the message and target audience.
+Good contrast helps users understand the design faster.

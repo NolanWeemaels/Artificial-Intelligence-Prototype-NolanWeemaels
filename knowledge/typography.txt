@@ -1,0 +1,6 @@
+Typography influences readability and visual style.
+Text should be easy to read.
+Font sizes should create a clear difference between title, subtitle and body text.
+Too many different fonts can make the design confusing.
+Line spacing should make longer text easier to read.
+Typography should match the tone and target audience of the design.

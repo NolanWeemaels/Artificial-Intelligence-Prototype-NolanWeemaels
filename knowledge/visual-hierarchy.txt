@@ -1,0 +1,6 @@
+Visual hierarchy means that the most important elements should stand out first.
+The title should be the most dominant text element.
+The subtitle should support the title, but should not compete with it.
+Body text should be readable but less dominant than the title.
+Buttons should be clearly visible when they are important actions.
+A good hierarchy guides the viewer through the design in a logical order.

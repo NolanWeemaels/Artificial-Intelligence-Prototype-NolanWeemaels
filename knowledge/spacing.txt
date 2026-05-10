@@ -1,0 +1,6 @@
+Spacing helps create structure and focus.
+Whitespace gives elements room to breathe.
+Too little spacing can make a design feel crowded.
+Too much spacing can make elements feel disconnected.
+Consistent spacing makes the design look more professional.
+Spacing should help separate different sections clearly.
