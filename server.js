@@ -7,11 +7,42 @@ const OpenAI = require("openai");
 const fs = require("fs");
 
 const app = express();
+
 const PORT = 3000;
 
 const upload = multer({ dest: "uploads/" });
 
 // Zorgt ervoor dat we bestanden kunnen ontvangen
+
+const knowledgeFiles = [
+  "visual-hierarchy.txt",
+  "composition.txt",
+  "typography.txt",
+  "color-contrast.txt",
+  "spacing.txt"
+];
+
+// Lijst met knowledge files voor RAG
+
+function getDesignGuidelines() {
+
+  let guidelines = "";
+
+  knowledgeFiles.forEach((fileName) => {
+
+    const filePath = path.join(__dirname, "knowledge", fileName);
+
+    const fileContent = fs.readFileSync(filePath, "utf8");
+
+    guidelines += fileContent + "\n\n";
+
+  });
+
+  return guidelines;
+
+}
+
+// Leest alle knowledge files en voegt ze samen
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -28,10 +59,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // Zorgt ervoor dat de public map zichtbaar wordt
 
 app.post("/analyze", upload.single("image"), async (req, res) => {
+
   try {
+
     const context = req.body.context;
 
     // Haalt context op van de gebruiker
+
+    const designGuidelines = getDesignGuidelines();
+
+    // Haalt de RAG designregels op
 
     const imagePath = req.file.path;
 
@@ -52,51 +89,54 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
             {
               type: "text",
               text: `
-              Analyze this UI design. Do not wrap the response in markdown or code blocks.
-              Also mention footer elements if visible.
-              Be more critical and give specific feedback.
+                Analyze this UI design. Do not wrap the response in markdown or code blocks.
+                Also mention footer elements if visible.
+                Be more critical and give specific feedback.
 
-              Context:
-              ${context}
+                Context:
+                ${context}
 
-              First detect the visible UI elements.
+                Design guidelines from RAG:
+                ${designGuidelines}
 
-              Identify:
-              - title
-              - subtitle
-              - buttons
-              - navigation
-              - images
-              - text blocks
-              - cards
+                First detect the visible UI elements.
 
-              Then return the response in this exact HTML structure:
+                Identify:
+                - title
+                - subtitle
+                - buttons
+                - navigation
+                - images
+                - text blocks
+                - cards
 
-              <h3>Detected Elements</h3>
-              <ul>
-              <li><strong>Title:</strong> ...</li>
-              <li><strong>Subtitle:</strong> ...</li>
-              <li><strong>Buttons:</strong> ...</li>
-              <li><strong>Navigation:</strong> ...</li>
-              <li><strong>Images:</strong> ...</li>
-              <li><strong>Text Blocks:</strong> ...</li>
-              <li><strong>Cards:</strong> ...</li>
-              </ul>
+                Then return the response in this exact HTML structure:
 
-              <h3>Hierarchy Feedback</h3>
-              <p>...</p>
+                <h3>Detected Elements</h3>
+                <ul>
+                <li><strong>Title:</strong> ...</li>
+                <li><strong>Subtitle:</strong> ...</li>
+                <li><strong>Buttons:</strong> ...</li>
+                <li><strong>Navigation:</strong> ...</li>
+                <li><strong>Images:</strong> ...</li>
+                <li><strong>Text Blocks:</strong> ...</li>
+                <li><strong>Cards:</strong> ...</li>
+                </ul>
 
-              <h3>Composition Feedback</h3>
-              <p>...</p>
+                <h3>Hierarchy Feedback</h3>
+                <p>...</p>
 
-              <h3>Suggestions</h3>
-              <ul>
-              <li>...</li>
-              <li>...</li>
-              </ul>
+                <h3>Composition Feedback</h3>
+                <p>...</p>
 
-              Keep the feedback short and clear.
-              `
+                <h3>Suggestions</h3>
+                <ul>
+                <li>...</li>
+                <li>...</li>
+                </ul>
+
+                Keep the feedback short and clear.
+                `
             },
             {
               type: "image_url",
@@ -109,7 +149,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
       ]
     });
 
-    // Stuurt afbeelding + context naar OpenAI
+    // Stuurt afbeelding + context + RAG regels naar OpenAI
 
     const feedback = response.choices[0].message.content;
 
@@ -122,6 +162,7 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     // Stuurt feedback terug naar frontend
 
   } catch (error) {
+
     console.log(error);
 
     // Toont fouten in de terminal
@@ -131,7 +172,9 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     });
 
     // Stuurt foutmelding terug naar frontend
+
   }
+
 });
 
 app.listen(PORT, () => {
