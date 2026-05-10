@@ -7,7 +7,6 @@ const OpenAI = require("openai");
 const fs = require("fs");
 
 const app = express();
-
 const PORT = 3000;
 
 const upload = multer({ dest: "uploads/" });
@@ -29,9 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Zorgt ervoor dat de public map zichtbaar wordt
 
 app.post("/analyze", upload.single("image"), async (req, res) => {
-
   try {
-
     const context = req.body.context;
 
     // Haalt context op van de gebruiker
@@ -55,41 +52,51 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
             {
               type: "text",
               text: `
-                Analyze this design.
+              Analyze this UI design. Do not wrap the response in markdown or code blocks.
+              Also mention footer elements if visible.
+              Be more critical and give specific feedback.
 
-                Context:
-                ${context}
+              Context:
+              ${context}
 
-                Detect:
-                - Title
-                - Subtitle
-                - Main image
-                - Body text
+              First detect the visible UI elements.
 
-                Then give feedback in this exact HTML structure:
+              Identify:
+              - title
+              - subtitle
+              - buttons
+              - navigation
+              - images
+              - text blocks
+              - cards
 
-                <h3>Detected Elements</h3>
-                <ul>
-                <li><strong>Title:</strong> ...</li>
-                <li><strong>Subtitle:</strong> ...</li>
-                <li><strong>Main Image:</strong> ...</li>
-                <li><strong>Body Text:</strong> ...</li>
-                </ul>
+              Then return the response in this exact HTML structure:
 
-                <h3>Hierarchy Feedback</h3>
-                <p>...</p>
+              <h3>Detected Elements</h3>
+              <ul>
+              <li><strong>Title:</strong> ...</li>
+              <li><strong>Subtitle:</strong> ...</li>
+              <li><strong>Buttons:</strong> ...</li>
+              <li><strong>Navigation:</strong> ...</li>
+              <li><strong>Images:</strong> ...</li>
+              <li><strong>Text Blocks:</strong> ...</li>
+              <li><strong>Cards:</strong> ...</li>
+              </ul>
 
-                <h3>Composition Feedback</h3>
-                <p>...</p>
+              <h3>Hierarchy Feedback</h3>
+              <p>...</p>
 
-                <h3>Suggestions</h3>
-                <ul>
-                <li>...</li>
-                <li>...</li>
-                </ul>
+              <h3>Composition Feedback</h3>
+              <p>...</p>
 
-                Keep the feedback short and simple.
-                `
+              <h3>Suggestions</h3>
+              <ul>
+              <li>...</li>
+              <li>...</li>
+              </ul>
+
+              Keep the feedback short and clear.
+              `
             },
             {
               type: "image_url",
@@ -109,13 +116,12 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
     // Haalt AI feedback op
 
     res.json({
-      feedback: `<p>${feedback}</p>`
+      feedback: feedback
     });
 
     // Stuurt feedback terug naar frontend
 
   } catch (error) {
-
     console.log(error);
 
     // Toont fouten in de terminal
@@ -124,8 +130,8 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
       feedback: "<p>Something went wrong while analyzing the design.</p>"
     });
 
+    // Stuurt foutmelding terug naar frontend
   }
-
 });
 
 app.listen(PORT, () => {
