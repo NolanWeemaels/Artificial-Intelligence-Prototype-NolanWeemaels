@@ -1,119 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>SecondEye</title>
-
+  <title>Klopt Da? AI</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="home-page">
 
-  <main class="container">
+  <header class="topbar home-color">
+    <h1 class="logo">Klopt Da?</h1>
+  </header>
 
-    <h1>SecondEye</h1>
+  <main class="home-container">
 
-    <p class="subtitle">
-      Upload your design and get AI feedback on hierarchy and composition.
-    </p>
+    <section class="intro">
+      <h2>Welkom bij Klopt Da? AI</h2>
+      <p>Waar wenst u feedback op?</p>
+    </section>
 
-    <div class="card">
+    <section class="choice-grid">
 
-      <label for="imageInput">
-        Upload PNG
-      </label>
+      <a href="web.html" class="choice-card web-choice">
+        <div class="choice-icon">💻</div>
+        <h3>Web/App</h3>
+      </a>
 
-      <input 
-        type="file" 
-        id="imageInput"
-        accept="image/png"
-      >
+      <a href="print.html" class="choice-card print-choice">
+        <div class="choice-icon">🖨️</div>
+        <h3>Print</h3>
+      </a>
 
-      <div id="imageWrapper">
-        <img 
-          id="imagePreview"
-          src=""
-          alt="Preview"
-        >
-
-        <div id="overlay"></div>
-      </div>
-
-      <div id="componentList"></div>
-
-      <div id="legend">
-
-        <div class="legend-item">
-          <span class="legend-color overlay-navigation"></span>
-          Navigation
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-title"></span>
-          Title
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-subtitle"></span>
-          Subtitle
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-image"></span>
-          Image
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-card"></span>
-          Card
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-button"></span>
-          Button
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-text"></span>
-          Text
-        </div>
-
-        <div class="legend-item">
-          <span class="legend-color overlay-footer"></span>
-          Footer
-        </div>
-
-      </div>
-
-      <label for="contextInput">
-        Design Context
-      </label>
-
-      <textarea 
-        id="contextInput"
-        placeholder="Example: Poster for a school event"
-      ></textarea>
-
-      <button id="analyzeBtn">
-        Analyze Design
-      </button>
-
-    </div>
-
-    <div class="result-card">
-
-      <h2>Feedback</h2>
-
-      <div id="result">
-        No feedback yet.
-      </div>
-
-    </div>
+    </section>
 
   </main>
 
-  <script src="main.js"></script>
+  <footer>
+    <p>Maakt gebruik van de OpenAI Api - Vergeet niet dat AI ook nog steeds fouten kan maken.</p>
+    <p>Schoolproject van Nolan Weemaels</p>
+  </footer>
 
 </body>
 </html>

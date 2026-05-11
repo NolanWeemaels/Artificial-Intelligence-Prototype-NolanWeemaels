@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI/UX Feedback</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="web-page">
+
+  <header class="topbar web-color">
+    <a href="index.html" class="logo">Klopt Da?</a>
+    <span class="page-icon">💻</span>
+  </header>
+
+  <main class="container">
+
+    <h2 class="page-title">UI/UX Feedback</h2>
+
+    <label for="imageInput">Upload ontwerp</label>
+    <input type="file" id="imageInput" accept="image/png, image/jpeg">
+
+    <div id="imageWrapper">
+      <img id="imagePreview" src="" alt="Preview">
+      <div id="overlay"></div>
+    </div>
+
+    <div id="componentList"></div>
+
+    <label for="contextInput">Context</label>
+    <textarea id="contextInput" placeholder="Bijvoorbeeld: homepage voor een webshop gericht op jongeren."></textarea>
+
+    <div class="button-row">
+      <button id="analyzeBtn">Analyseren</button>
+      <a href="index.html" class="back-button">Ga terug</a>
+    </div>
+
+    <section class="result-card">
+      <h3>Feedback</h3>
+      <div id="result">Nog geen feedback.</div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Maakt gebruik van de OpenAI Api - Vergeet niet dat AI ook nog steeds fouten kan maken.</p>
+    <p>Schoolproject van Nolan Weemaels</p>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
