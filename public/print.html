@@ -3,19 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Print Feedback</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="print-page">
 
   <header class="topbar print-color">
-    <a href="index.html" class="logo">Klopt Da?</a>
-    <span class="page-icon">🖨️</span>
+    <a href="index.html">
+      <img src="./assets/LogoKloptDa%3F.svg" alt="Klopt Da Logo" class="logo">
+    </a>
   </header>
 
   <main class="container">
 
-    <h2 class="page-title">Print Feedback</h2>
+    <h1 class="page-title">Print Feedback</h1>
+
+    <input type="hidden" id="designType" value="Print ontwerp">
 
     <label for="imageInput">Upload ontwerp</label>
     <input type="file" id="imageInput" accept="image/png, image/jpeg">
@@ -27,6 +36,17 @@
 
     <div id="componentList"></div>
 
+    <div id="legend">
+      <div class="legend-item"><span class="legend-color overlay-navigation"></span>Navigation</div>
+      <div class="legend-item"><span class="legend-color overlay-title"></span>Title</div>
+      <div class="legend-item"><span class="legend-color overlay-subtitle"></span>Subtitle</div>
+      <div class="legend-item"><span class="legend-color overlay-image"></span>Image</div>
+      <div class="legend-item"><span class="legend-color overlay-card"></span>Card</div>
+      <div class="legend-item"><span class="legend-color overlay-button"></span>Button</div>
+      <div class="legend-item"><span class="legend-color overlay-text"></span>Text</div>
+      <div class="legend-item"><span class="legend-color overlay-footer"></span>Footer</div>
+    </div>
+
     <label for="contextInput">Context</label>
     <textarea id="contextInput" placeholder="Bijvoorbeeld: affiche voor een schoolfeest of flyer voor een event."></textarea>
 
@@ -36,7 +56,7 @@
     </div>
 
     <section class="result-card">
-      <h3>Feedback</h3>
+      <h2>Feedback</h2>
       <div id="result">Nog geen feedback.</div>
     </section>
 

@@ -5,6 +5,7 @@ const result = document.getElementById("result");
 const imagePreview = document.getElementById("imagePreview");
 const componentList = document.getElementById("componentList");
 const overlay = document.getElementById("overlay");
+const designTypeInput = document.getElementById("designType");
 
 imageInput.addEventListener("change", () => {
 
@@ -35,12 +36,13 @@ analyzeBtn.addEventListener("click", async () => {
 
   const file = imageInput.files[0];
   const context = contextInput.value;
+  const designType = designTypeInput.value;
 
-  // Haalt afbeelding en context op
+  // Haalt afbeelding, context en type ontwerp op
 
   if (!file) {
 
-    result.innerHTML = "<p>Please upload a PNG file.</p>";
+    result.innerHTML = "<p>Please upload a design first.</p>";
 
     return;
 
@@ -52,6 +54,7 @@ analyzeBtn.addEventListener("click", async () => {
 
   formData.append("image", file);
   formData.append("context", context);
+  formData.append("designType", designType);
 
   // Zet data klaar voor de server
 
@@ -66,7 +69,7 @@ analyzeBtn.addEventListener("click", async () => {
     body: formData
   });
 
-  // Stuurt afbeelding + context naar server
+  // Stuurt afbeelding, context en type ontwerp naar server
 
   const data = await response.json();
 
@@ -74,7 +77,7 @@ analyzeBtn.addEventListener("click", async () => {
 
   console.log(data);
 
-  // Toont serverantwoord in console
+  // Toont serverantwoord in console voor debugging
 
   if (data.components) {
 
@@ -94,9 +97,9 @@ analyzeBtn.addEventListener("click", async () => {
       box.classList.add("overlay-box");
       box.classList.add("overlay-" + component.type);
 
-      // Geeft elke overlay box een kleur op basis van het component type
-
       box.textContent = component.label;
+
+      // Geeft elke overlay box een kleur op basis van het component type
 
       box.style.left = (component.x || 5) + "%";
       box.style.top = (component.y || 5) + "%";
@@ -109,7 +112,7 @@ analyzeBtn.addEventListener("click", async () => {
 
   }
 
-  // Tekent overlay boxes op de afbeelding
+  // Toont badges en tekent overlay boxes op de afbeelding
 
   result.innerHTML = data.feedback;
 

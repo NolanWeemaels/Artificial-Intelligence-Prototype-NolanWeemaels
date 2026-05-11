@@ -7,55 +7,35 @@ const OpenAI = require("openai");
 const fs = require("fs");
 
 const app = express();
+
 const PORT = 3000;
 
 const upload = multer({ dest: "uploads/" });
 
-// Zorgt ervoor dat afbeeldingen ontvangen worden
-
-const knowledgeFiles = [
-  "visual-hierarchy.txt",
-  "composition.txt",
-  "typography.txt",
-  "color-contrast.txt",
-  "spacing.txt"
-];
-
-// Bevat de RAG knowledge files
-
-function getDesignGuidelines() {
-  let guidelines = "";
-
-  knowledgeFiles.forEach((fileName) => {
-    const filePath = path.join(__dirname, "knowledge", fileName);
-    const fileContent = fs.readFileSync(filePath, "utf8");
-
-    guidelines += fileContent + "\n\n";
-  });
-
-  return guidelines;
-}
-
-// Leest de RAG bestanden uit
+// Zorgt ervoor dat we bestanden kunnen uploaden
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Maakt de OpenAI client aan
+// Leest de OpenAI API key uit .env
 
 app.use(express.json());
+
+// Laat Express JSON lezen
+
 app.use(express.static(path.join(__dirname, "public")));
 
+// Maakt de public map zichtbaar
+
 app.post("/analyze", upload.single("image"), async (req, res) => {
+
   try {
+
     const context = req.body.context;
+    const designType = req.body.designType;
 
-    // Haalt de context op
-
-    const designGuidelines = getDesignGuidelines();
-
-    // Haalt de RAG regels op
+    // Haalt context en type ontwerp op
 
     const imagePath = req.file.path;
 
@@ -65,20 +45,35 @@ app.post("/analyze", upload.single("image"), async (req, res) => {
       encoding: "base64"
     });
 
-    // Zet de afbeelding om naar base64
+    // Zet afbeelding om naar base64
+
+    const designGuidelines = fs.readFileSync(
+      "./design_regels_ui_ux_analyse.txt",
+      "utf8"
+    );
+
+    // Leest de RAG knowledge file in
 
     const response = await openai.chat.completions.create({
+
       model: "gpt-4o-mini",
-      response_format: { type: "json_object" },
+
       messages: [
         {
           role: "user",
+
           content: [
+
             {
               type: "text",
-              text: `
 
-Analyze this UI design.
+              text: `
+Analyze this design.
+
+Design type:
+${designType}
+
+This means you should give feedback specifically for this type of design.
 
 Return ONLY valid JSON.
 Do not use markdown.
@@ -91,7 +86,14 @@ Design guidelines from RAG:
 ${designGuidelines}
 
 Detect visible UI elements:
-title, subtitle, buttons, navigation, images, text blocks, cards and footer.
+- title
+- subtitle
+- buttons
+- navigation
+- images
+- text blocks
+- cards
+- footer
 
 Every component must include:
 - type
@@ -102,10 +104,15 @@ Every component must include:
 - height
 
 Use percentages from 0 to 100.
-x = distance from the left.
-y = distance from the top.
-width = width of the detected area.
-height = height of the detected area.
+
+The overlay positions must closely match the real position of the UI element in the image.
+
+x = distance from the left
+y = distance from the top
+width = width of the detected area
+height = height of the detected area
+
+Be critical and specific in the feedback.
 
 Return this exact JSON structure:
 
@@ -120,41 +127,69 @@ Return this exact JSON structure:
       "height": 10
     }
   ],
-  "feedback": "<h3>Detected Elements</h3><ul><li>...</li></ul><h3>Hierarchy Feedback</h3><p>...</p><h3>Composition Feedback</h3><p>...</p><h3>Suggestions</h3><ul><li>...</li></ul>"
+
+  "feedback": "
+    <h3>Detected Elements</h3>
+
+    <ul>
+      <li>...</li>
+    </ul>
+
+    <h3>Hierarchy Feedback</h3>
+    <p>...</p>
+
+    <h3>Composition Feedback</h3>
+    <p>...</p>
+
+    <h3>Suggestions</h3>
+
+    <ul>
+      <li>...</li>
+    </ul>
+  "
 }
 `
             },
+
             {
               type: "image_url",
+
               image_url: {
                 url: `data:image/png;base64,${base64Image}`
               }
             }
+
           ]
         }
       ]
     });
 
-    // Stuurt afbeelding, context en RAG naar OpenAI
+    // Stuurt afbeelding + context + RAG naar OpenAI
 
-    const aiResult = JSON.parse(response.choices[0].message.content);
+    const content = response.choices[0].message.content;
 
-    // Zet het AI antwoord om naar JSON
+    // Haalt AI antwoord op
 
-    res.json(aiResult);
+    const parsedResponse = JSON.parse(content);
 
-    // Stuurt components en feedback naar frontend
+    // Zet AI antwoord om naar JSON
+
+    res.json(parsedResponse);
+
+    // Stuurt resultaat terug naar frontend
 
   } catch (error) {
+
     console.log(error);
 
+    // Toont fouten in terminal
+
     res.status(500).json({
-      components: [],
       feedback: "<p>Something went wrong while analyzing the design.</p>"
     });
 
-    // Stuurt een foutmelding terug
   }
+
 });
 
 app.listen(PORT, () => {
