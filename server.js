@@ -7,77 +7,56 @@ const OpenAI = require("openai");
 const fs = require("fs");
 
 const app = express();
-
 const PORT = 3000;
 
 const upload = multer({ dest: "uploads/" });
-
-// Zorgt ervoor dat we bestanden kunnen uploaden
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Leest de OpenAI API key uit .env
-
 app.use(express.json());
-
-// Laat Express JSON lezen
-
 app.use(express.static(path.join(__dirname, "public")));
-
-// Maakt de public map zichtbaar
 
 app.post("/analyze", upload.single("image"), async (req, res) => {
 
   try {
 
-    const context = req.body.context;
-    const designType = req.body.designType;
-
-    // Haalt context en type ontwerp op
+    const context = req.body.context || "";
+    const designType = req.body.designType || "Design";
 
     const imagePath = req.file.path;
-
-    // Haalt het pad van de afbeelding op
 
     const base64Image = fs.readFileSync(imagePath, {
       encoding: "base64"
     });
 
-    // Zet afbeelding om naar base64
-
     const designGuidelines = fs.readFileSync(
-      "./design_regels_ui_ux_analyse.txt",
+      "./knowledge/design_regels_ui_ux_analyse.txt",
       "utf8"
     );
-
-    // Leest de RAG knowledge file in
 
     const response = await openai.chat.completions.create({
 
       model: "gpt-4o-mini",
 
+      response_format: {
+        type: "json_object"
+      },
+
       messages: [
         {
           role: "user",
-
           content: [
-
             {
               type: "text",
-
               text: `
 Analyze this design.
 
 Design type:
 ${designType}
 
-This means you should give feedback specifically for this type of design.
-
-Return ONLY valid JSON.
-Do not use markdown.
-Do not use code blocks.
+Give feedback specifically for this type of design.
 
 Context:
 ${context}
@@ -85,13 +64,15 @@ ${context}
 Design guidelines from RAG:
 ${designGuidelines}
 
+Return ONLY valid JSON.
+
 Detect visible UI elements:
 - title
 - subtitle
 - buttons
 - navigation
 - images
-- text blocks
+- text
 - cards
 - footer
 
@@ -103,16 +84,10 @@ Every component must include:
 - width
 - height
 
-Use percentages from 0 to 100.
+Allowed component types:
+title, subtitle, button, navigation, image, text, card, footer
 
-The overlay positions must closely match the real position of the UI element in the image.
-
-x = distance from the left
-y = distance from the top
-width = width of the detected area
-height = height of the detected area
-
-Be critical and specific in the feedback.
+Use percentages from 0 to 100 for x, y, width and height.
 
 Return this exact JSON structure:
 
@@ -127,64 +102,72 @@ Return this exact JSON structure:
       "height": 10
     }
   ],
-
-  "feedback": "
-    <h3>Detected Elements</h3>
-
-    <ul>
-      <li>...</li>
-    </ul>
-
-    <h3>Hierarchy Feedback</h3>
-    <p>...</p>
-
-    <h3>Composition Feedback</h3>
-    <p>...</p>
-
-    <h3>Suggestions</h3>
-
-    <ul>
-      <li>...</li>
-    </ul>
-  "
+  "detectedElements": [
+    "Main title",
+    "Navigation",
+    "Button"
+  ],
+  "hierarchyFeedback": "Short but specific feedback about hierarchy.",
+  "compositionFeedback": "Short but specific feedback about composition.",
+  "suggestions": [
+    "First suggestion",
+    "Second suggestion"
+  ]
 }
 `
             },
-
             {
               type: "image_url",
-
               image_url: {
                 url: `data:image/png;base64,${base64Image}`
               }
             }
-
           ]
         }
       ]
     });
 
-    // Stuurt afbeelding + context + RAG naar OpenAI
-
     const content = response.choices[0].message.content;
-
-    // Haalt AI antwoord op
 
     const parsedResponse = JSON.parse(content);
 
-    // Zet AI antwoord om naar JSON
+    const detectedElementsHTML = parsedResponse.detectedElements
+      .map((item) => `<li>${item}</li>`)
+      .join("");
 
-    res.json(parsedResponse);
+    const suggestionsHTML = parsedResponse.suggestions
+      .map((item) => `<li>${item}</li>`)
+      .join("");
 
-    // Stuurt resultaat terug naar frontend
+    const feedbackHTML = `
+      <h3>Detected Elements</h3>
+      <ul>
+        ${detectedElementsHTML}
+      </ul>
+
+      <h3>Hierarchy Feedback</h3>
+      <p>${parsedResponse.hierarchyFeedback}</p>
+
+      <h3>Composition Feedback</h3>
+      <p>${parsedResponse.compositionFeedback}</p>
+
+      <h3>Suggestions</h3>
+      <ul>
+        ${suggestionsHTML}
+      </ul>
+    `;
+
+    res.json({
+      components: parsedResponse.components || [],
+      feedback: feedbackHTML
+    });
 
   } catch (error) {
 
     console.log(error);
 
-    // Toont fouten in terminal
-
     res.status(500).json({
+      components: [],
       feedback: "<p>Something went wrong while analyzing the design.</p>"
     });
 
@@ -195,5 +178,3 @@ Return this exact JSON structure:
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// Start de server

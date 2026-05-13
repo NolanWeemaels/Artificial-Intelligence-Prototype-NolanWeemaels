@@ -1,0 +1,5 @@
+Good hierarchy uses clear titles and spacing.
+Good composition keeps balance between elements.
+Buttons should stand out.
+Navigation should be easy to understand.
+Whitespace improves readability.
