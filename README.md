@@ -42,7 +42,7 @@ http://localhost:3000
 
 ---
 
-## Project Structure 📁
+## Project Structure
 
 ```txt
 project/
